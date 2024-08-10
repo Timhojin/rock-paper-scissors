@@ -1,20 +1,17 @@
 let humanScore = 0, computerScore = 0;
 
-function getComputerChoice() {
+function getHumanSelection(buttonClicked) {
+    return buttonClicked.id;
+}
+
+function getComputerSelection() {
     let n = Math.floor(Math.random() * 3);
     if(n === 0) return "rock";
     else if(n === 1) return "paper";
     else return "scissors";
 }
 
-function getHumanChoice() {
-    return prompt("Rock Paper Scissors!").toLowerCase();
-}
-
-function playRound(humanChoice, computerChoice) {
-    console.log(`Your choice is ${humanChoice}.`);
-    console.log(`The computer's choice is ${computerChoice}`);
-
+function roundResult(humanChoice, computerChoice) {
     let k = 0;
     if(humanChoice === "rock") {
         switch(computerChoice) {
@@ -55,30 +52,84 @@ function playRound(humanChoice, computerChoice) {
                 break;
         }
     }
-    else {
-        k = -1;
-        console.log("INVALID input. The computer wins.");
-    }
 
-    if(k === 1) {
-        console.log(`You WIN! ${humanChoice} beats ${computerChoice}.`);
-        humanScore ++;
-    }
-    else if(k === -1) {
-        console.log(`You LOSE! ${humanChoice} beats ${computerChoice}.`);
-        computerScore ++;
-    }
-    else console.log(`TIE!`);
+    return k;
 }
 
 function playGame() {
-    for(let i = 1; i <= 5; i++) 
-        playRound(getHumanChoice(), getComputerChoice());
+    container.setAttribute("style", "display: flex;");
+    startContainer.setAttribute("style", "display: none;");
 
-    console.log(' ');
-    if(humanScore > computerScore) console.log(`You are WINNER! You won ${humanScore}-${computerScore}.`);
-    else if(humanScore < computerScore) console.log(`You Lost. The computer won ${humanScore}-${computerScore}.`);
-    else console.log(`DRAW. The game ended in a ${humanScore}-${computerScore} tie.`);
+    const scoreBoard = document.createElement("div");
+    const human = document.createElement("h3");
+    const computer = document.createElement("h3");
+
+    scoreBoard.setAttribute("style", "display: flex; justify-content: center; gap: 40px;");
+    human.textContent = `Your score: ${humanScore}`;
+    computer.textContent = `Computer score: ${computerScore}`;
+
+    document.body.appendChild(scoreBoard);
+    scoreBoard.appendChild(human);
+    scoreBoard.appendChild(computer);
+
+    const context = document.createElement("div");
+    const humanContext = document.createElement("p");
+    const computerContext = document.createElement("p");
+    const roundContext = document.createElement("p");
+
+    context.setAttribute("style", "display: flex; flex-direction: column; justify-content: center; margin-top: 10px;");
+    context.appendChild(humanContext);
+    context.appendChild(computerContext);
+    context.appendChild(roundContext);
+
+    document.body.appendChild(context);
+    
+    while(humanScore < 5 && computerScore < 5) {
+        const buttonClicked = document.querySelector(".select");
+
+        buttonClicked.addEventListener("click", () => {
+            const userChoice = getHumanSelection(buttonClicked);
+            const computerChoice = getComputerSelection();
+
+            humanContext.textContent = userChoice;
+            computerContext.textContent = computerChoice;
+
+            const rResult = roundResult(userChoice, computerChoice);
+            if(rResult === 1) {
+                roundContext.textContent = `WIN! ${userChoice} beats ${computerChoice}.`;
+                humanScore++;
+            }
+            else if(rResult === -1) {
+                roundContext.textContent = `LOSE. ${computerChoice} beats ${userChoice}.`;
+                computerScore++;
+            }
+            else {
+                roundContext.textContent = "TIE.";
+            }
+
+            humanContext.textContent = '';
+            roundContext.textContent = '';
+            computerContext.textContent = '';
+
+            human.textContent = `Your score: ${humanScore}`;
+            computer.textContent = `Computer score: ${computerScore}`;
+        });
+    }
+    
+    context.removeChild(humanContext);
+    context.removeChild(computerContext);
+
+    if(humanScore > computerScore) {
+        roundContext.textContent = "Congratulations! You won the game!";
+    }
+    else {
+        roundContext.textContent = "Better luck next time.";
+    }
 }
 
-playGame();
+const start = document.querySelector("#start");
+const container = document.querySelector(".container");
+const selection = document.querySelector(".select");
+const startContainer = document.querySelector(".startContainer");
+
+start.addEventListener("click", playGame);
