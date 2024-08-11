@@ -3,12 +3,6 @@
     padding: 0;
 }
 
-.container {
-    display: none;
-    gap: 10px;
-    justify-content: center;
-}
-
 button {
     padding: 10px;
     font-size: 20px;
@@ -25,11 +19,8 @@ button {
     background-color: grey;
 }
 
-.startContainer {
+body {
     display: flex;
-    justify-content: center;
-}
-#start {
-    color: white;
-    background-color: red;
+    align-items: center;
+    flex-direction: column;
 }

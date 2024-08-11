@@ -1,17 +1,20 @@
 let humanScore = 0, computerScore = 0;
 
-function getHumanSelection(buttonClicked) {
-    return buttonClicked.id;
-}
-
-function getComputerSelection() {
+function getComputerChoice() {
     let n = Math.floor(Math.random() * 3);
     if(n === 0) return "rock";
     else if(n === 1) return "paper";
     else return "scissors";
 }
 
-function roundResult(humanChoice, computerChoice) {
+function getHumanChoice() {
+    return prompt("Rock Paper Scissors!").toLowerCase();
+}
+
+function playRound(humanChoice, computerChoice) {
+    humanContext.textContent = `Your choice is ${humanChoice}.`;
+    computerContext.textContent = `The computer's choice is ${computerChoice}`;
+
     let k = 0;
     if(humanChoice === "rock") {
         switch(computerChoice) {
@@ -52,84 +55,71 @@ function roundResult(humanChoice, computerChoice) {
                 break;
         }
     }
+    else {
+        k = -1;
+        roundContext.textContent = "INVALID input. The computer wins.";
+        console.log();
+    }
 
-    return k;
+    if(k === 1) {
+        roundContext.textContent = `You WIN! ${humanChoice} beats ${computerChoice}.`;
+        humanScore ++;
+    }
+    else if(k === -1) {
+        roundContext.textContent = `You LOSE! ${humanChoice} beats ${computerChoice}.`;
+        computerScore ++;
+    }
+    else roundContext.textContent = `You LOSE! ${humanChoice} beats ${computerChoice}.`;
+
+    humanScoreBoard.textContent = `Your score: ${humanScore}`;
+    computerScoreBoard.textContent = `Computer score: ${computerScore}`;
+
+    if(humanScore === 5 || computerScore === 5) {
+        const result = document.createElement("div");
+        document.body.appendChild(result);
+
+        if(humanScore > computerScore) result.textContent = `You are WINNER! You won ${humanScore}-${computerScore}.`;
+        else if(humanScore < computerScore) result.textContent = `You Lost. The computer won ${humanScore}-${computerScore}.`;
+        else result.textContent =   `DRAW. The game ended in a ${humanScore}-${computerScore} tie.`;
+    }
 }
 
 function playGame() {
-    container.setAttribute("style", "display: flex;");
-    startContainer.setAttribute("style", "display: none;");
+    const rock = document.querySelector("#rock");
+    const paper = document.querySelector("#paper");
+    const scissors = document.querySelector("#scissors");
 
-    const scoreBoard = document.createElement("div");
-    const human = document.createElement("h3");
-    const computer = document.createElement("h3");
-
-    scoreBoard.setAttribute("style", "display: flex; justify-content: center; gap: 40px;");
-    human.textContent = `Your score: ${humanScore}`;
-    computer.textContent = `Computer score: ${computerScore}`;
-
-    document.body.appendChild(scoreBoard);
-    scoreBoard.appendChild(human);
-    scoreBoard.appendChild(computer);
-
-    const context = document.createElement("div");
-    const humanContext = document.createElement("p");
-    const computerContext = document.createElement("p");
-    const roundContext = document.createElement("p");
-
-    context.setAttribute("style", "display: flex; flex-direction: column; justify-content: center; margin-top: 10px;");
-    context.appendChild(humanContext);
-    context.appendChild(computerContext);
-    context.appendChild(roundContext);
-
-    document.body.appendChild(context);
-    
-    while(humanScore < 5 && computerScore < 5) {
-        const buttonClicked = document.querySelector(".select");
-
-        buttonClicked.addEventListener("click", () => {
-            const userChoice = getHumanSelection(buttonClicked);
-            const computerChoice = getComputerSelection();
-
-            humanContext.textContent = userChoice;
-            computerContext.textContent = computerChoice;
-
-            const rResult = roundResult(userChoice, computerChoice);
-            if(rResult === 1) {
-                roundContext.textContent = `WIN! ${userChoice} beats ${computerChoice}.`;
-                humanScore++;
-            }
-            else if(rResult === -1) {
-                roundContext.textContent = `LOSE. ${computerChoice} beats ${userChoice}.`;
-                computerScore++;
-            }
-            else {
-                roundContext.textContent = "TIE.";
-            }
-
-            humanContext.textContent = '';
-            roundContext.textContent = '';
-            computerContext.textContent = '';
-
-            human.textContent = `Your score: ${humanScore}`;
-            computer.textContent = `Computer score: ${computerScore}`;
-        });
-    }
-    
-    context.removeChild(humanContext);
-    context.removeChild(computerContext);
-
-    if(humanScore > computerScore) {
-        roundContext.textContent = "Congratulations! You won the game!";
-    }
-    else {
-        roundContext.textContent = "Better luck next time.";
-    }
+    rock.addEventListener("click", () => {
+        playRound("rock", getComputerChoice());
+    });
+    paper.addEventListener("click", () => {
+        playRound("paper", getComputerChoice());
+    });
+    scissors.addEventListener("click", () => {
+        playRound("scissors", getComputerChoice());
+    });
 }
 
-const start = document.querySelector("#start");
-const container = document.querySelector(".container");
-const selection = document.querySelector(".select");
-const startContainer = document.querySelector(".startContainer");
+const newDiv = document.createElement("div");
 
-start.addEventListener("click", playGame);
+const humanScoreBoard = document.createElement("p");
+const computerScoreBoard = document.createElement("p");
+
+const humanContext =  document.createElement("p");
+const computerContext =  document.createElement("p");
+const roundContext =  document.createElement("p");
+
+newDiv.appendChild(humanScoreBoard);
+newDiv.appendChild(computerScoreBoard);
+
+humanScoreBoard.textContent = `Your score: ${humanScore}`;
+computerScoreBoard.textContent = `Computer score: ${computerScore}`;
+
+newDiv.appendChild(humanContext);
+newDiv.appendChild(computerContext);
+newDiv.appendChild(roundContext);
+
+document.body.appendChild(newDiv);
+newDiv.setAttribute("style", "text-align: center;");
+
+playGame();
